@@ -26,3 +26,14 @@ snowflake算法的实现基于[bwmarrin/snowflake](https://github.com/bwmarrin/s
 [client](https://github.com/rpcxio/did/tree/master/cmd/client)实现远程调用ID生成器的服务，这个例子采用服务地址硬编码的方式实现。如果你的服务使用了etcd、nacos等服务中心，你可以配置client使用注册中心自动获取服务节点。
 
 客户端的例子演示了获取单个ID和获取批量ID的方法。
+
+## 性能
+
+单个节点每秒可以产生**400万**左右的ID。
+
+```sh
+BenchmarkGenerate-4                 	 4918761	       244 ns/op	   4097826 ids/s	     115 B/op	       1 allocs/op
+BenchmarkGenerateBatch-4            	   49309	     24472 ns/op	   4086058 ids/s	   10811 B/op	     104 allocs/op
+BenchmarkGenerate_Parallel-4        	 4903029	       244 ns/op	   4093939 ids/s	      88 B/op	       0 allocs/op
+BenchmarkGenerateBatch_Parallel-4   	   49328	     24402 ns/op	   4097864 ids/s	   12904 B/op	     126 allocs/op
+```

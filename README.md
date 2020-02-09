@@ -47,7 +47,7 @@ BenchmarkGenerateBatch_Parallel-4   	   49328	     24402 ns/op	   4097864 ids/s	
 total IDs: 25600000, duration: 3m31.581592489s, id/s: 120993
 ```
 
-**2**、如果采用批量获取，尽量1减少网络消耗，256个client并发，每次只获取100个ID, ID的产生速度是 **29.7万/秒**。
+**2**、如果采用批量获取，尽量1减少网络消耗，256个client并发，每次只获取100个ID, ID的产生速度是 **297万/秒**。
 ```sh
 ./bclient -addr 10.41.15.225:8972 -n 1000000 -b 100
 total IDs: 256000000, duration: 1m26.178942509s, id/s: 2970563

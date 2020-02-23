@@ -27,6 +27,13 @@ snowflake算法的实现基于[bwmarrin/snowflake](https://github.com/bwmarrin/s
 
 客户端的例子演示了获取单个ID和获取批量ID的方法。
 
+### memcached 协议访问
+
+除了使用 [rpcx](https://rpcx.io)访问外，你还可以通过memcached协议获取id。
+
+- `get id\r\n`: 获取一个id
+- `gets 100\r\n`: 一次获取100个id
+
 ## 性能
 
 单个节点每秒可以产生**400万**左右的ID。

@@ -2,9 +2,13 @@ package main
 
 import (
 	"flag"
+	"io"
+	"net"
 
 	"github.com/rpcxio/did/snowflake"
+	"github.com/smallnest/rpcx/protocol"
 	"github.com/smallnest/rpcx/server"
+	"github.com/soheilhy/cmux"
 )
 
 var (
@@ -30,5 +34,38 @@ func main() {
 	// 注册SnowFlake服务
 	s.RegisterName("snowflake", snowFlake, "")
 
-	s.Serve("tcp", *addr)
+	ln, err := net.Listen("tcp", *addr)
+	if err != nil {
+		panic(err)
+	}
+
+	rpcxLn, otherLn, err := configListener(ln)
+	if err != nil {
+		panic(err)
+	}
+
+	go s.ServeListener("tcp", rpcxLn)
+
+	ms := snowflake.NewMemcachedServer(otherLn, snowFlake)
+	ms.Serve()
+}
+
+func configListener(ln net.Listener) (net.Listener, net.Listener, error) {
+	m := cmux.New(ln)
+	// rpcx
+	rpcxLn := m.Match(rpcxPrefixByteMatcher())
+	// other
+	otherLn := m.Match(cmux.Any())
+
+	go m.Serve()
+
+	return rpcxLn, otherLn, nil
+}
+func rpcxPrefixByteMatcher() cmux.Matcher {
+	magic := protocol.MagicNumber()
+	return func(r io.Reader) bool {
+		buf := make([]byte, 1)
+		n, _ := r.Read(buf)
+		return n == 1 && buf[0] == magic
+	}
 }
